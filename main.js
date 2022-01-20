@@ -5,6 +5,8 @@ const timezone = document.getElementById('time-zone');
 const countryEl = document.getElementById('country');
 const weatherForecastEl = document.getElementById('weather-forecast');
 const currentTempEl = document.getElementById('current-temp');
+const searchbox = document.querySelector('.search-box');
+searchbox.addEventListener('keypress', setQuery);
 
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -29,6 +31,32 @@ setInterval(() => {
     dateEl.innerHTML = days[day] + ', ' + date + ' ' + months[month]
 
 }, 1000);
+
+
+function setQuery(evt) {
+    if (evt.keyCode == 13) {
+        getResults(searchbox.value);
+    }
+}
+
+function getResults (query) {
+    fetch(`${api.base}weather?q=${query}&units=metric&APPID=${api.key}`)
+    .then(weather => {
+        return weather.json();
+    }).then(displayResults);
+}
+
+function displayResults (weather) {
+    console.log(weather)
+
+    fetch(`${api.base}onecall?lat=${weather.coord.lat}&lon=${weather.coord.lon}&exclude=hourly,minutely&units=metric&APPID=${api.key}`).then(res => res.json()).then(data => {
+        showWeatherData(data);
+        console.log(data);
+    })
+
+}
+
+
 
 getWeatherdata()
 
